@@ -24,8 +24,16 @@ android {
         annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
 
         //RX Java
-        compile 'io.reactivex.rxjava2:rxjava:2.0.3'
-        compile 'io.reactivex:rxandroid:1.2.1'
+        //compile 'io.reactivex:rxandroid:2.0.4'
+        //compile 'io.reactivex:rxjava:2.0.4'
+
+        compile 'io.reactivex.rxjava2:rxjava:2.0.4'
+        // Because RxAndroid releases are few and far between, it is recommended you also
+        // explicitly depend on RxJava's latest version for bug fixes and new features.
+        compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+
+        //Volley
+        compile 'com.android.volley:volley:1.0.0'
 
     }
 }
