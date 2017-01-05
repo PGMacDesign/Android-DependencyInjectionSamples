@@ -14,10 +14,13 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import io.reactivex.Notification;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
@@ -93,8 +96,8 @@ public class RXJavaActivity extends AppCompatActivity {
 
             @Override
             public void onComplete() {
+                // TODO: 2017-01-04 Cannot call UI elements here
                 Log.d("disposableObserver", "onComplete hit");
-                textView.setText("FINISHED");
             }
         };
 
@@ -122,6 +125,7 @@ public class RXJavaActivity extends AppCompatActivity {
             @Override
             public void onComplete() {
                 Log.d("observer1", "onComplete hit");
+                //textView.setText("complete");
             }
         };
 
@@ -139,11 +143,40 @@ public class RXJavaActivity extends AppCompatActivity {
             }
         };
 
+
+
         //Checking for curse words via purgomalum.net
         Observable.just("one", "two", "shit", "four", "five")
-                .observeOn(Schedulers.io())
-                .subscribeOn(AndroidSchedulers.mainThread())
+
+                .subscribeOn(Schedulers.io())//OR: Schedulers: .computation(), .newThread()., .io()
+                //.debounce()
+                //.concatWith()
+                //.zipWith()
+                //.subscribeOn(AndroidSchedulers.mainThread())
                 .map(func)
+                .retry(4)
+                .doOnNext(new Consumer<Object>() {
+                    @Override
+                    public void accept(Object o) throws Exception {
+                        // TODO: 2017-01-04 Cannot interact with main thread here
+                        // TODO: this is called when onNext is called in the observable
+                    }
+                })
+                .doOnTerminate(new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        // TODO: 2017-01-04 Cannot interact with main thread here
+                        // TODO: this is called when onComplete is called in the observable.
+                    }
+                })
+                .doOnEach(new Consumer<Notification<Object>>() {
+                    @Override
+                    public void accept(Notification<Object> objectNotification) throws Exception {
+                        try {
+                            Log.d("consumer notification", objectNotification.getValue().toString());
+                        } catch (NullPointerException npe){}
+                    }
+                })
                 /*
                 .filter(new Func1<String, Boolean>() {
                     @Override
@@ -157,8 +190,11 @@ public class RXJavaActivity extends AppCompatActivity {
                     }
                 })
                 */
+                .observeOn(AndroidSchedulers.mainThread())
+                //.subscribeWith(observer1);
                 .subscribe(observer1);
-        //ddddddddddddddddddddddd
+
+
     }
 
     private String tryAddingNetwork(Object o){
@@ -189,10 +225,63 @@ public class RXJavaActivity extends AppCompatActivity {
 
         return null;
     }
-    private void emailChangeListener(){
+    private void zipWithSampleCode(){
+        /*
+        BehaviorSubject<String> foo = BehaviorSubject.create();
+            foo.subscribeOn(Subscriber.io()).observeOn(mainThread())
+            .subscribe(string -> print(string));
 
+            return  identifySelf()
+                    .subscribeOn(Schedulers.io())
+                    .map(new Func1<self, config>(){
+                        ...call(){
+                        foo.onNext("identified self");
+                        return getConfigFromNetwork();
+                        }
+                        })
+         */
     }
 
+    //From: http://blog.feedpresso.com/2016/01/25/why-you-should-use-rxjava-in-android-a-short-introduction-to-rxjava.html
+    private void complicatedChainCall(){
+        /*
+        Observable.fromCallable(createNewUser())
+            .subscribeOn(Schedulers.io())
+            .flatMap(new Func1<User, Observable<Pair<Settings, List<Message>>>>() {
+                @Override
+                public Observable<Pair<Settings, List<Message>>> call(User user) {
+                    return Observable.zip(
+                            Observable.from(fetchUserSettings(user)),
+                            Observable.from(fetchUserMessages(user))
+                            , new Func2<Settings, List<Message>, Pair<Settings, List<Message>>>() {
+                                @Override
+                                public Pair<Settings, List<Message>> call(Settings settings, List<Message> messages) {
+                                    return Pair.create(settings, messages);
+                                }
+                            });
+                }
+            })
+            .doOnNext(new Action1<Pair<Settings, List<Message>>>() {
+                @Override
+                public void call(Pair<Settings, List<Message>> pair) {
+                    System.out.println("Received settings" + pair.first);
+                }
+            })
+            .flatMap(new Func1<Pair<Settings, List<Message>>, Observable<Message>>() {
+                @Override
+                public Observable<Message> call(Pair<Settings, List<Message>> settingsListPair) {
+                    return Observable.from(settingsListPair.second);
+                }
+            })
+            .subscribe(new Action1<Message>() {
+                @Override
+                public void call(Message message) {
+                    System.out.println("New message " + message);
+                }
+            });
+
+        */
+    }
     @Override
     protected void onDestroy() {
         super.onDestroy();
