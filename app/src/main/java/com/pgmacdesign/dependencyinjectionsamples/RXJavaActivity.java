@@ -125,7 +125,7 @@ public class RXJavaActivity extends AppCompatActivity {
             @Override
             public void onComplete() {
                 Log.d("observer1", "onComplete hit");
-                //textView.setText("complete");
+                textView.setText("complete");
             }
         };
 
