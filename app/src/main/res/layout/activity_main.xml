@@ -18,9 +18,17 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <Button
+                android:id="@+id/button_custom_tabs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:text="Custom Tabs"
+                />
 
             <Button
                 android:id="@+id/button_butter_knife"
+                android:layout_below="@+id/button_custom_tabs"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
@@ -37,8 +45,26 @@
                 />
 
             <Button
-                android:id="@+id/button_dddddddd"
+                android:id="@+id/button_dagger_2"
                 android:layout_below="@+id/button_rx_java"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:text="Dagger 2"
+                />
+
+            <Button
+                android:id="@+id/button_dart"
+                android:layout_below="@+id/button_dagger_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:text="Dart"
+                />
+
+            <Button
+                android:id="@+id/button_dddddddd"
+                android:layout_below="@+id/button_dart"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"

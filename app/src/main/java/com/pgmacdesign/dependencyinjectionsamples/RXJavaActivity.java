@@ -18,6 +18,7 @@ import io.reactivex.Notification;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
@@ -25,21 +26,112 @@ import io.reactivex.functions.Function;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 
+/**
+ * come back to for more info if needed:
+ * https://github.com/kaushikgopal/RxJava-Android-Samples/blob/master/README.md
+ */
 public class RXJavaActivity extends AppCompatActivity {
 
     private TextView textView;
     private DisposableObserver dpo;
+
+    private CompositeDisposable myDisposable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rxjava);
         textView = (TextView) this.findViewById(R.id.textView);
+        myDisposable = new CompositeDisposable();
         test1(this);
     }
 
     private static final String[] names = {"Pat", "Laura", "Arwen", "Caspian", "Liam"};
 
+
+    private void test2(){
+        dpo = new DisposableObserver() {
+            @Override
+            public void onNext(Object o) {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        };
+
+        Function<String, Object> func = new Function<String, Object>() {
+            @Override
+            public Object apply(String s) throws Exception {
+                // TODO: 2017-01-04 THIS IS WHERE BACKGROUND THREAD STUFF GOES!
+                Log.d("in func:", "s = " + s);
+                String str = tryAddingNetwork(s);
+                if(str == null){
+                    return s;
+                } else {
+                    return str;
+                }
+            }
+        };
+
+
+
+        //Checking for curse words via purgomalum.net
+        Observable.just("one", "two", "shit", "four", "five")
+
+                .subscribeOn(Schedulers.io())//OR: Schedulers: .computation(), .newThread()., .io()
+                //.debounce()
+                //.concatWith()
+                //.zipWith()
+                //.subscribeOn(AndroidSchedulers.mainThread())
+                .map(func)
+                .retry(4)
+                .doOnNext(new Consumer<Object>() {
+                    @Override
+                    public void accept(Object o) throws Exception {
+                        // TODO: 2017-01-04 Cannot interact with main thread here
+                        // TODO: this is called when onNext is called in the observable
+                    }
+                })
+                .doOnTerminate(new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        // TODO: 2017-01-04 Cannot interact with main thread here
+                        // TODO: this is called when onComplete is called in the observable.
+                    }
+                })
+                .doOnEach(new Consumer<Notification<Object>>() {
+                    @Override
+                    public void accept(Notification<Object> objectNotification) throws Exception {
+                        try {
+                            Log.d("consumer notification", objectNotification.getValue().toString());
+                        } catch (NullPointerException npe){}
+                    }
+                })
+                /*
+                .filter(new Func1<String, Boolean>() {
+                    @Override
+                    public Boolean call(String s) {
+                        Log.d("filter hit", "string s = " + s);
+                        if(s == null){
+                            return false;
+                        } else {
+                            return true;
+                        }
+                    }
+                })
+                */
+                .observeOn(AndroidSchedulers.mainThread())
+                //.subscribeWith(observer1);
+                .subscribe(dpo);
+    }
     /**
      * Notes:
      * 1) Always override the onError for observables b/c if it triggers and has not been
@@ -286,5 +378,6 @@ public class RXJavaActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         dpo.dispose();
+        myDisposable.dispose();
     }
 }
