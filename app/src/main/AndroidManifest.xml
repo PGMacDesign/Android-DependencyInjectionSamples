@@ -18,8 +18,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity android:name=".ButterKnifeActivity" />
         <activity android:name=".RXJavaActivity" />
+        <activity android:name=".WelcomeScreen" />
+
+
         <activity
             android:name=".DaggerActivity"
             android:label="@string/title_activity_dagger"

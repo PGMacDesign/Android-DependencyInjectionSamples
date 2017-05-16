@@ -5,7 +5,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.3'
+        classpath 'com.android.tools.build:gradle:2.3.0'
 
         //Android Annotations: https://github.com/androidannotations/androidannotations
         // replace with the current version of the Android plugin

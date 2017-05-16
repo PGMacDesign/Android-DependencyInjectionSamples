@@ -63,8 +63,17 @@
                 />
 
             <Button
-                android:id="@+id/button_dddddddd"
+                android:id="@+id/welcome_screen"
                 android:layout_below="@+id/button_dart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:text="Welcome Screen Test"
+                />
+
+            <Button
+                android:id="@+id/button_dddddddd"
+                android:layout_below="@+id/welcome_screen"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"

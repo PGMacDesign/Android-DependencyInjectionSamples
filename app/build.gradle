@@ -19,6 +19,12 @@ android {
     }
     dependencies {
 
+        //Retrofit / OkHTTP3
+        compile 'com.squareup.retrofit2:retrofit:2.2.0'
+        compile 'com.squareup.retrofit2:converter-gson:2.2.0'
+        compile 'com.squareup.okhttp3:okhttp:3.6.0'
+        compile 'com.squareup.okhttp3:logging-interceptor:3.6.0'
+
         //Butterknife: https://github.com/JakeWharton/butterknife
         compile 'com.jakewharton:butterknife:8.4.0'
         annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
@@ -41,8 +47,9 @@ android {
         compile 'com.f2prateek.dart:henson:2.0.1'
         provided 'com.f2prateek.dart:henson-processor:2.0.1'
 
-
-
+        //Experimenting with Welcome screen stuff.
+        // Link: https://github.com/txusballesteros/welcome-coordinator
+        compile 'com.redbooth:WelcomeCoordinator:1.0.1'
 
         //Volley
         compile 'com.android.volley:volley:1.0.0'

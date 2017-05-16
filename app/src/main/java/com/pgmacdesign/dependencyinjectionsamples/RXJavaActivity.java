@@ -4,6 +4,9 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import java.io.BufferedInputStream;
@@ -29,10 +32,112 @@ import io.reactivex.schedulers.Schedulers;
 /**
  * come back to for more info if needed:
  * https://github.com/kaushikgopal/RxJava-Android-Samples/blob/master/README.md
+ * Realm Android Rx Tutorial -- (Rx Java) -- https://www.youtube.com/watch?v=XLH2v9deew0
  */
-public class RXJavaActivity extends AppCompatActivity {
+public class RXJavaActivity extends AppCompatActivity implements View.OnClickListener {
 
+    /*
+    NOTES:
+
+        More research: (todo)
+            RxMarbles: (http://rxmarbles.com/#delay)
+            RxDocumentation: (https://github.com/ReactiveX/RxJava/wiki/How-To-Use-RxJava)
+            Dan Lew's Blog post series (http://blog.danlew.net/2014/09/15/grokking-rxjava-part-1/)
+            Vogella (http://www.vogella.com/tutorials/RxJava/article.html) 
+            @RunChristinaRun (Christina Lee, She ran the RXJava talk on Realm)
+        RX == Observables (Represent asynchronous data streams)
+            + link queries (Allow to compose streams with operators)
+            + schedulers (Allow to manage concurencies within streams)
+
+        Observables:
+            Streams of data
+            Pull based (Except subjects)
+            Create, store, pass around <-- important
+            Abstract away threading, synchronization, concurrency, etc
+            2 Phases:
+                1) Put data in
+                    Sample: Observable.just("some text");
+                    Sample: Observable.just(new String[]{"Pat", "Laura", "Liam"});
+                    Longer Sample with operators:
+                        Observable.create(new OnSubscribe<String>(){
+                            @Override
+                            public void call(Subscribe<? super String> subscriber) {
+                                subscriber.onNext("some text here");
+                                subscriber.onCompleted();
+                            }
+                        }
+                2) Get data out
+            Observable Operators
+                .OnNext
+                .onComplete
+                    This will end a stream (Stuff went as expected)
+                    Safe for cleanup (Recycle objects)
+                .onError
+                    This will end a stream (Something went wrong)
+                    NOTE! If this gets hit, this takes the place of onComplete so that will not get hit!
+
+        Operators (At a higher level)
+            -------> See RXMarbles for more operator samples <------
+            TONS of operators, too many to list here.
+            -Filter -- .filter() works if the filter procs (IE, .filter(4%2 = 0) <-- would proc)
+            -merge
+            -doOnNext -- do this when on Next triggers
+
+        Link Queries:
+            todo research
+
+        Subscribe:
+            Subscribers can take various #s of functions or none. (0 - 3). Make sure to always
+            pass an error one though
+            Use subscribeOn and observeOn here
+            Can subscribe and unsubscribe too (when done / no longer needed)
+            Thread management:
+                subscribeOn()
+                    Declare it ONLY ONCE
+                    subscribeOn(Schedulers.io()) <--- This would be io thread, not Main
+                    subscribeOn(Schedulers.Main()) <--- This would be io thread, not Main
+                    It will default to the thread in which the observable itself was created (Main /
+                    UI is normal, but could be computational too)
+                    Observable will kick off execution on this thread no matter where declared
+                observeOn()
+                    Declare it as many times as needed
+                    It affects all operators downstream
+                        Any new observeOn call will change all stuff below it unless new observeOn is made
+
+        Usages of RXJava in Android
+            1) Bind to button clicks
+            2) Cache hits on network calls
+            3) Handle auth flow via a single stream
+
+        Factory Analogy:
+            Raw Material == Creation
+            Converyor Belts == Operators / Transforms
+            End Product == Output
+
+        Schedulers:
+            Scheduler mainThread = AndroidSchedulers.mainThread();
+            Scheduler computation = Schedulers.computation();
+            Scheduler io = Schedulers.io();
+
+        //Local broadcast receiver (Not RX, but useful nonetheless)
+            LocalBroadcastManager localBM = LocalBroadcastManager.getInstance(RXJavaActivity.this);
+
+        intent,getStringExtra(smsUtility.KEY_VERIF_CODE) <-- to compare
+        ContentObservable.fromLocalBroadcase(newLocalBroadcast())
+
+        Timed Auth observable
+            .observeOn(Schedulers.io())
+            .doStuff
+            .flatMap
+            .observeOn(MainThtread)
+            .subsribeOn(updateUI)
+
+
+     */
     private TextView textView;
+    private Button button1, button2, button3;
+    private EditText edittext1, edittext2;
+
     private DisposableObserver dpo;
 
     private CompositeDisposable myDisposable;
@@ -42,12 +147,28 @@ public class RXJavaActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rxjava);
         textView = (TextView) this.findViewById(R.id.textView);
+        this.edittext1 = (EditText) this.findViewById(R.id.edittext1);
+        this.edittext2 = (EditText) this.findViewById(R.id.edittext2);
+        this.button1 = (Button) this.findViewById(R.id.button1);
+        this.button2 = (Button) this.findViewById(R.id.button2);
+        this.button3 = (Button) this.findViewById(R.id.button3);
+        this.button1.setOnClickListener(this);
+        this.button2.setOnClickListener(this);
+        this.button3.setOnClickListener(this);
+
         myDisposable = new CompositeDisposable();
-        test1(this);
+
+        //test1(this);
     }
 
     private static final String[] names = {"Pat", "Laura", "Arwen", "Caspian", "Liam"};
 
+    private void test3(){
+
+
+
+        //checkProfanity();
+    }
 
     private void test2(){
         dpo = new DisposableObserver() {
@@ -379,5 +500,23 @@ public class RXJavaActivity extends AppCompatActivity {
         super.onDestroy();
         dpo.dispose();
         myDisposable.dispose();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.button1:
+                test3();
+                break;
+
+            case R.id.button2:
+
+                break;
+
+            case R.id.button3:
+
+                break;
+
+        }
     }
 }
