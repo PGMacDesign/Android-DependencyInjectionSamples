@@ -1,5 +1,6 @@
 package com.pgmacdesign.dependencyinjectionsamples.networkclasses;
 
+import io.reactivex.Observable;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -28,5 +29,7 @@ public interface ProfantiyCheckerInterface {
     @GET(SERVICE_BASE_STRING + PROFANITY_BASE_STRING)
     Call<ResponseBody> checkProfanity(@Query("text") String text);
 
+    @GET(SERVICE_BASE_STRING + PROFANITY_BASE_STRING)
+    Observable<ResponseBody> checkProfanity2(@Query("text") String text);
 
 }

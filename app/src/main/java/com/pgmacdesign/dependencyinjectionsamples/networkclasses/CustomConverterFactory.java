@@ -6,6 +6,7 @@ import com.pgmacdesign.dependencyinjectionsamples.otherutils.L;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Observable;
 
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
@@ -25,6 +26,7 @@ public class CustomConverterFactory extends Converter.Factory  {
     private static final Type TYPE_STRING = new TypeToken<String>(){}.getType();
 
     //How to make custom type converters
+    private static final Type ObservableType = new TypeToken<Observable>(){}.getType();
     //private static final Type TYPE_TESTINGPOJO = new TypeToken<TESTINGPOJO>(){}.getType();
     //private static final Type TYPE_LIST_OF_TESTINGPOJO = new TypeToken<ArrayList<TESTINGPOJO>>(){}.getType();
 
@@ -78,6 +80,21 @@ public class CustomConverterFactory extends Converter.Factory  {
             }
 
         } else if(type == (TYPE_STRING)){
+            //String
+            try {
+                Converter<ResponseBody, ?> converter = new Converter<ResponseBody, String>() {
+                    @Override
+                    public String convert(ResponseBody value) throws IOException {
+                        return value.string();
+                    }
+                };
+                return converter;
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+
+        }  else if(type == (ObservableType)){
+            L.m("this is where it is breaking !!!!!");
             //String
             try {
                 Converter<ResponseBody, ?> converter = new Converter<ResponseBody, String>() {

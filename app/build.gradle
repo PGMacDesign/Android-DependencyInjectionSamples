@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
+apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'android-apt'
 android {
+    /*
+    This is used if you get a 'duplicate files error'
+    packagingOptions {
+//Use “exclude” to point at the specific file (or files) that Android Studio is complaining about//
+        exclude 'META-INF/rxjava.properties'
+    }
+    */
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
     defaultConfig {
@@ -11,6 +19,10 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
     buildTypes {
         release {
             minifyEnabled false
@@ -20,8 +32,8 @@ android {
     dependencies {
 
         //Retrofit / OkHTTP3
-        compile 'com.squareup.retrofit2:retrofit:2.2.0'
-        compile 'com.squareup.retrofit2:converter-gson:2.2.0'
+        compile 'com.squareup.retrofit2:retrofit:2.3.0'
+        compile 'com.squareup.retrofit2:converter-gson:2.3.0'
         compile 'com.squareup.okhttp3:okhttp:3.6.0'
         compile 'com.squareup.okhttp3:logging-interceptor:3.6.0'
 
@@ -29,11 +41,31 @@ android {
         compile 'com.jakewharton:butterknife:8.4.0'
         annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
 
-        //RX Java: https://github.com/ReactiveX/RxJava
-        compile 'io.reactivex.rxjava2:rxjava:2.0.4'
-        // Because RxAndroid releases are few and far between, it is recommended you also
-        // explicitly depend on RxJava's latest version for bug fixes and new features.
+
+        //RX Java. Link: https://github.com/ReactiveX/RxJava
+        compile 'io.reactivex.rxjava2:rxjava:2.1.0'
+        //RX Adapter (for Retrofit). Link: https://github.com/square/retrofit/tree/master/retrofit-adapters/rxjava2
+        compile 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
+
+        //RX Android. Link: https://github.com/ReactiveX/RxAndroid
         compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+        //RX View(s). Link: https://github.com/JakeWharton/RxBinding
+        compile 'com.jakewharton.rxbinding2:rxbinding:2.0.0'
+        compile 'com.jakewharton.rxbinding2:rxbinding-support-v4:2.0.0'
+        compile 'com.jakewharton.rxbinding2:rxbinding-appcompat-v7:2.0.0'
+        compile 'com.jakewharton.rxbinding2:rxbinding-design:2.0.0'
+        compile 'com.jakewharton.rxbinding2:rxbinding-recyclerview-v7:2.0.0'
+        compile 'com.jakewharton.rxbinding2:rxbinding-leanback-v17:2.0.0'
+
+        //RX Permissions. Link: https://github.com/tbruyelle/RxPermissions
+        compile 'com.tbruyelle.rxpermissions2:rxpermissions:0.9.4@aar'
+
+        //RxLifecycle (managing memory leaks). Link: https://github.com/trello/RxLifecycle/tree/2.x
+        //compile 'com.trello.rxlifecycle2:rxlifecycle:2.0.1'
+        //compile 'com.trello.rxlifecycle2:rxlifecycle-android:2.0.1'
+        //Currently causing a break! see link here for details:
+        // http://stackoverflow.com/questions/37347326/errorconflict-with-dependency-com-google-code-findbugsjsr305
+
 
         //Android Annotations: https://github.com/androidannotations/androidannotations
         apt "org.androidannotations:androidannotations:4.2.0"
@@ -55,10 +87,11 @@ android {
         compile 'com.android.volley:volley:1.0.0'
 
         //Adding in some customTabs just for experimentation
-        compile 'com.android.support:customtabs:25.0.1'
+        compile 'com.android.support:customtabs:25.3.1'
     }
 
 }
+apply plugin: 'me.tatarka.retrolambda'
 allprojects {
     repositories {
         mavenCentral()
@@ -70,7 +103,7 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:25.0.1'
-    compile 'com.android.support:design:25.0.1'
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:design:25.3.1'
     testCompile 'junit:junit:4.12'
 }
