@@ -29,11 +29,13 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Response;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 /**
@@ -186,6 +188,10 @@ https://code.tutsplus.com/tutorials/rxjava-for-android-apps-introducing-rxbindin
     private DisposableObserver dpo;
 
     private CompositeDisposable myDisposable;
+
+    private ProfantiyCheckerInterface profantiyCheckerInterface;
+
+    private Disposable clickDisposable;
 
     String curseWord;
 
@@ -433,15 +439,8 @@ https://code.tutsplus.com/tutorials/rxjava-for-android-apps-introducing-rxbindin
     }
 
     private void test7(){
-        RetrofitClient.Builder builder = new RetrofitClient.Builder(
-                ProfantiyCheckerInterface.class,
-                ProfantiyCheckerInterface.BASE_URL);
-        builder.setTimeouts(60000, 60000);
-        builder.setLogLevel(HttpLoggingInterceptor.Level.BODY);
-        builder.setCustomAdapterFactory(RxJava2CallAdapterFactory.create());
-        builder.callIsJSONFormat();
-        ProfantiyCheckerInterface profantiyCheckerInterface = builder.build().buildServiceClient();
-        Observable<ResponseBody> observable = profantiyCheckerInterface.checkProfanity2(curseWord);
+
+        Observable<ResponseBody> observable = buildClient().checkProfanity2(curseWord);
         observable.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -455,50 +454,248 @@ https://code.tutsplus.com/tutorials/rxjava-for-android-apps-introducing-rxbindin
 
     private void handleError(Throwable t){
         t.printStackTrace();
-        
+
     }
+
+    private ProfantiyCheckerInterface buildClient(){
+        if(profantiyCheckerInterface == null){
+            profantiyCheckerInterface = new RetrofitClient.Builder(ProfantiyCheckerInterface.class,
+                    ProfantiyCheckerInterface.BASE_URL)
+                    .setTimeouts(60000, 60000)
+                    .setLogLevel(HttpLoggingInterceptor.Level.BODY)
+                    .setCustomAdapterFactory(RxJava2CallAdapterFactory.create())
+                    .callIsJSONFormat()
+                    .build()
+                    .buildServiceClient();
+        }
+        return profantiyCheckerInterface;
+    }
+
+    private int numItemsChecked;
 
     private void test6(){
+        this.clickDisposable = null;
         //Great tutorial - https://medium.com/3xplore/handling-api-calls-using-retrofit-2-and-rxjava-2-1871c891b6ae
+        L.toast(this, "Checking multiple: ");
 
-        RetrofitClient.Builder builder = new RetrofitClient.Builder(
-                ProfantiyCheckerInterface.class,
-                ProfantiyCheckerInterface.BASE_URL);
-        builder.setTimeouts(60000, 60000);
-        builder.setLogLevel(HttpLoggingInterceptor.Level.BODY);
-        builder.setCustomAdapterFactory(RxJava2CallAdapterFactory.create());
-        builder.callIsJSONFormat();
-        ProfantiyCheckerInterface profantiyCheckerInterface = builder.build().buildServiceClient();
-        Observable<ResponseBody> observable = profantiyCheckerInterface.checkProfanity2(curseWord);
-        observable.subscribeOn(Schedulers.newThread())
-                .map(rb -> {
-                    if(rb != null){
-                        L.m("within map, rb is not null");
-                    } else {
-                        L.m("within map, rb is null");
+        final Observable<ResponseBody> observable = buildClient().checkProfanity2(curseWord);
+        numItemsChecked = 0;
+
+        // TODO: 2017-05-18 look into this more -->  Observable.fromCallable();
+        // TODO: 2017-05-18 look into this more -->  Observable.create();
+
+        button4.setText("PROCESSING!!!!!!!!");
+        observable.subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .doAfterNext(new Consumer<ResponseBody>() {
+                    @Override
+                    public void accept(@NonNull ResponseBody responseBody) throws Exception {
+                        // This gets hit at the very end after everything else is done
                     }
-                    return rb;
+                })
+                .doOnNext(new Consumer<ResponseBody>() {
+                    @Override
+                    public void accept(@NonNull ResponseBody responseBody) throws Exception {
+                        String str = responseBody.string();
+                        L.m("within doOnNext, 1st response == " + str);
+                        curseWord = curseWord + "s";
+                        Response resp = buildClient().checkProfanity(curseWord).execute();
+                        Object obj = resp.body();
+                        L.m("obj == " + obj.toString());
+                        numItemsChecked++;
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(new Consumer<ResponseBody>() {
+                    @Override
+                    public void accept(@NonNull ResponseBody responseBody) throws Exception {
+                        L.toast(RXJavaActivity.this, "Current Curseword == " + curseWord);
+                    }
+                })
+                .observeOn(Schedulers.io())
+                .doOnNext(new Consumer<ResponseBody>() {
+                    @Override
+                    public void accept(@NonNull ResponseBody responseBody) throws Exception {
+                        String str = responseBody.string();
+                        L.m("within doOnNext, 2nd response == " + str);
+                        curseWord = curseWord + "s";
+                        Response resp = buildClient().checkProfanity(curseWord).execute();
+                        Object obj = resp.body();
+                        L.m("obj == " + obj.toString());
+                        numItemsChecked++;
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(new Consumer<ResponseBody>() {
+                    @Override
+                    public void accept(@NonNull ResponseBody responseBody) throws Exception {
+                        L.toast(RXJavaActivity.this, "Current Curseword == " + curseWord);
+                    }
+                })
+                .observeOn(Schedulers.io())
+                .doOnNext(new Consumer<ResponseBody>() {
+                    @Override
+                    public void accept(@NonNull ResponseBody responseBody) throws Exception {
+                        String str = responseBody.string();
+                        L.m("within doOnNext, 3rd response == " + str);
+                        curseWord = curseWord + "s";
+                        Response resp = buildClient().checkProfanity(curseWord).execute();
+                        Object obj = resp.body();
+                        L.m("obj == " + obj.toString());
+                        numItemsChecked++;
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(new Consumer<ResponseBody>() {
+                    @Override
+                    public void accept(@NonNull ResponseBody responseBody) throws Exception {
+                        L.toast(RXJavaActivity.this, "Current Curseword == " + curseWord);
+                    }
+                })
+                .observeOn(Schedulers.io())
+                .doOnNext(new Consumer<ResponseBody>() {
+                    @Override
+                    public void accept(@NonNull ResponseBody responseBody) throws Exception {
+                        String str = responseBody.string();
+                        L.m("within doOnNext, 4th response == " + str);
+                        curseWord = curseWord + "s";
+                        Response resp = buildClient().checkProfanity(curseWord).execute();
+                        Object obj = resp.body();
+                        L.m("obj == " + obj.toString());
+                        numItemsChecked++;
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(new Consumer<ResponseBody>() {
+                    @Override
+                    public void accept(@NonNull ResponseBody responseBody) throws Exception {
+                        L.toast(RXJavaActivity.this, "Current Curseword == " + curseWord);
+                    }
+                })
+                .observeOn(Schedulers.io())
+                .doOnNext(new Consumer<ResponseBody>() {
+                    @Override
+                    public void accept(@NonNull ResponseBody responseBody) throws Exception {
+                        String str = responseBody.string();
+                        L.m("within doOnNext, 5th response == " + str);
+                        curseWord = curseWord + "s";
+                        Response resp = buildClient().checkProfanity(curseWord).execute();
+                        Object obj = resp.body();
+                        L.m("obj == " + obj.toString());
+                        numItemsChecked++;
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(new Consumer<ResponseBody>() {
+                    @Override
+                    public void accept(@NonNull ResponseBody responseBody) throws Exception {
+                        L.toast(RXJavaActivity.this, "Current Curseword == " + curseWord);
+                    }
+                })
+                .observeOn(Schedulers.io())
+                .doOnNext(new Consumer<ResponseBody>() {
+                    @Override
+                    public void accept(@NonNull ResponseBody responseBody) throws Exception {
+                        String str = responseBody.string();
+                        L.m("within doOnNext, 6th response == " + str);
+                        curseWord = curseWord + "s";
+                        Response resp = buildClient().checkProfanity(curseWord).execute();
+                        Object obj = resp.body();
+                        L.m("obj == " + obj.toString());
+                        numItemsChecked++;
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(new Consumer<ResponseBody>() {
+                    @Override
+                    public void accept(@NonNull ResponseBody responseBody) throws Exception {
+                        L.toast(RXJavaActivity.this, "Current Curseword == " + curseWord);
+                    }
                 })
                 .observeOn(AndroidSchedulers.mainThread()) //From here down, on main thread
-                .subscribe(rb -> {
-                    if(rb != null){
-                        String str = rb.string();
-                        if(!StringUtilities.isNullOrEmpty(str)){
-                            L.m("Response from server was: " + str);
-                            L.toast(RXJavaActivity.this, "Is '" + curseWord + "' a curse word? == \n" + str);
-                        } else {
-                            L.toast(RXJavaActivity.this, "response was not null, but string was???");
-                        }
-                    } else {
-                        L.toast(RXJavaActivity.this, "response was null");
+                .subscribe(new Consumer<ResponseBody>() {
+                    @Override
+                    public void accept(@NonNull ResponseBody rb) throws Exception {
+                        L.toast(RXJavaActivity.this,
+                                "done (num web calls == " + numItemsChecked + ")");
+                        // TODO: 2017-05-18 look into disposables here
+                        clickDisposable.dispose();
+                        button4.setText("BUTTON4");
                     }
-
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable throwable) throws Exception {
+                        L.m("onError?");
+                        clickDisposable.dispose();
+                        L.toast(RXJavaActivity.this, "ON ERROR!!!");
+                        button4.setText("BUTTON4");
+                    }
+                }, new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        L.m("onComplete?");
+                    }
+                }, new Consumer<Disposable>() {
+                    @Override
+                    public void accept(@NonNull Disposable disposable) throws Exception {
+                        L.m("onSubscribe?");
+                        clickDisposable = disposable;
+                    }
                 });
+
         /*
+
+
+
+
+         */
+
         RxView.clicks(this.button4)
                 .subscribe();
-        */
+
     }
+
+
+    private void test8(){
+        Observable<Object> observable = Observable.create(new ObservableOnSubscribe<Object>() {
+            @Override
+            public void subscribe(@NonNull ObservableEmitter<Object> e) throws Exception {
+
+            }
+        });
+
+        DisposableObserver disposableObserver = new DisposableObserver() {
+            @Override
+            public void onNext(@NonNull Object o) {
+
+            }
+
+            @Override
+            public void onError(@NonNull Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        };
+        observable.subscribe(disposableObserver);
+        disposableObserver.dispose();
+    }
+
+    private void test9(){
+        Observable<Response> response = Observable
+                .fromCallable(() -> {
+                    return buildClient().checkProfanity(curseWord);
+                })
+                .subscribeOn(Schedulers.io())
+                .map(rb -> rb.string()) //Jake Wharton's examples are 100% wrong here.....
+                .flatMap(s -> Observable.fromArray(s.toString().split(" ")))
+                .observeOn(AndroidSchedulers.mainThread());
+        response.subscribe();
+    }
+
     //From: http://blog.feedpresso.com/2016/01/25/why-you-should-use-rxjava-in-android-a-short-introduction-to-rxjava.html
     private void complicatedChainCall(){
         /*
