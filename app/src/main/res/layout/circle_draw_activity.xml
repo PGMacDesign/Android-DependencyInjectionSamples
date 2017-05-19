@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <LinearLayout
+        android:id="@+id/circle_draw_button_layout"
+        android:layout_alignParentTop="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2"
+        >
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/circle_draw_button_1"
+            android:layout_weight="1"
+            android:text="show button"
+            android:layout_alignParentTop="true"
+            />
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/circle_draw_button_2"
+            android:layout_weight="1"
+            android:text="hide button"
+            android:layout_alignParentTop="true"
+            />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/circle_draw_button_rel_layout"
+        android:layout_below="@+id/circle_draw_button_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.pgmacdesign.dependencyinjectionsamples.CircleDrawActivityV2
+            android:id="@+id/circular_fab"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/circle_draw_fab"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="40dp"
+                android:background="@drawable/simple_circle"
+                />
+
+            <ProgressBar
+                android:id="@+id/circle_draw_progress_bar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="32dp"
+                android:visibility="visible"
+                >
+            </ProgressBar>
+
+
+        </com.pgmacdesign.dependencyinjectionsamples.CircleDrawActivityV2>
+
+        </RelativeLayout>
+
+
+
+
+
+        <!--
+
+
+
+        -->
+
+    </RelativeLayout>

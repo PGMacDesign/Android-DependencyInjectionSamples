@@ -17,7 +17,7 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Button button_butter_knife, button_rx_java, button_dagger_2, button_custom_tabs,
-            button_dart, welcome_screen;
+            button_dart, welcome_screen, button_circle_draw;
     private PendingIntent testPendingIntent;
 
     private static final String DAGGER_TUTORIAL_URL = "https://github.com/google/dagger";
@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         this.button_custom_tabs = (Button) this.findViewById(R.id.button_custom_tabs);
         this.button_dart = (Button) this.findViewById(R.id.button_dart);
         this.welcome_screen = (Button) this.findViewById(R.id.welcome_screen);
+        this.button_circle_draw = (Button) this.findViewById(R.id.button_circle_draw);
 
         this.button_dart.setOnClickListener(this);
         this.button_custom_tabs.setOnClickListener(this);
@@ -48,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         this.button_rx_java.setOnClickListener(this);
         this.button_butter_knife.setOnClickListener(this);
         this.welcome_screen.setOnClickListener(this);
+        this.button_circle_draw.setOnClickListener(this);
     }
 
 
@@ -106,6 +108,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(intent);
                 break;
 
+            case R.id.button_circle_draw:
+                intent = new Intent(this, CircleDrawActivity.class);
+                startActivity(intent);
+                break;
         }
     }
 }

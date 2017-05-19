@@ -20,7 +20,6 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -28,13 +27,10 @@
         <activity android:name=".ButterKnifeActivity" />
         <activity android:name=".RXJavaActivity" />
         <activity android:name=".WelcomeScreen" />
+        <activity android:name=".CircleDrawActivity" />
+        <activity android:name=".DaggerActivity" />
+        <activity android:name=".DartActivity" />
 
-
-        <activity
-            android:name=".DaggerActivity"
-            android:label="@string/title_activity_dagger"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".DartActivity"></activity>
     </application>
 
 </manifest>

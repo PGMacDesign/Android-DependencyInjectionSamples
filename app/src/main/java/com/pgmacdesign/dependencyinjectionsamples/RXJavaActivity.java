@@ -685,6 +685,7 @@ https://code.tutsplus.com/tutorials/rxjava-for-android-apps-introducing-rxbindin
     }
 
     private void test9(){
+        /*
         Observable<Response> response = Observable
                 .fromCallable(() -> {
                     return buildClient().checkProfanity(curseWord);
@@ -694,6 +695,7 @@ https://code.tutsplus.com/tutorials/rxjava-for-android-apps-introducing-rxbindin
                 .flatMap(s -> Observable.fromArray(s.toString().split(" ")))
                 .observeOn(AndroidSchedulers.mainThread());
         response.subscribe();
+        */
     }
 
     //From: http://blog.feedpresso.com/2016/01/25/why-you-should-use-rxjava-in-android-a-short-introduction-to-rxjava.html
