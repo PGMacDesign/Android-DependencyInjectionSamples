@@ -88,6 +88,12 @@ android {
 
         //Adding in some customTabs just for experimentation
         compile 'com.android.support:customtabs:25.3.1'
+
+        //Animations: https://github.com/daimajia/AndroidImageSlide
+        compile 'com.daimajia.slider:library:1.1.5@aar'
+        compile 'com.nineoldandroids:library:2.4.0'
+        compile 'com.daimajia.easing:library:1.0.1@aar'
+        compile 'com.daimajia.androidanimations:library:1.1.3@aar'
     }
 
 }
