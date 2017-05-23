@@ -34,12 +34,16 @@
         android:layout_below="@+id/circle_draw_button_layout"
         >
 
-        <com.pgmacdesign.dependencyinjectionsamples.MultiColorCircle
-            android:id="@+id/my_circle"
-            android:padding="8dp"
-            android:layout_margin="8dp"
+        <Button
+            android:id="@+id/circle_center_button"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="testing"
+            />
+
+
 
     </RelativeLayout>
 
